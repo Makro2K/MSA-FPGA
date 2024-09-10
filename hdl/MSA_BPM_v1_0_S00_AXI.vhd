@@ -410,9 +410,9 @@ begin
 	      when b"100" =>
 	        reg_data_out <= slv_reg4;
 	      when b"101" =>
-	        reg_data_out <= slv_reg5;
+	        reg_data_out <= tmp_data_out;
 	      when b"110" =>
-	        reg_data_out <= slv_reg6;
+	        reg_data_out <= tmp_status;
 	      when others =>
 	        reg_data_out  <= (others => '0');
 	    end case;
