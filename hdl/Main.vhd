@@ -27,7 +27,7 @@ architecture Behavioral of Main is
     signal X:       std_logic_vector (31 downto 0);
     signal MASK:    std_logic_vector (31 downto 0) := (others => '0');
     signal diff:    std_logic_vector (31 downto 0);
-    signal k:       std_logic_vector (7 downto 0);
+    signal k:       std_logic_vector (31 downto 0);
     
     type b_array is array (0 to 12) of std_logic_vector (31 downto 0);
     
@@ -69,7 +69,7 @@ begin
                     status_o <= std_logic_vector(TO_UNSIGNED(1,32));
                     tmp_data := m;
                     diff <= tmp_data;
-                    k <= tmp_data(7 downto 0);                       
+                    k <= tmp_data;                       
                     VP <= std_logic_vector(shift_left(unsigned_long,TO_INTEGER(unsigned(tmp_data)))) - 1;
                     VN <= (others => '0');
                     stage <= "010";
@@ -81,15 +81,15 @@ begin
                         b(TO_INTEGER(unsigned(tmp_data))) <= (b(TO_INTEGER(unsigned(tmp_data))) or std_logic_vector(shift_left(unsigned_long,i)));
                         i := i + 1;
                     elsif (control_i = 3) then
-                        stage <= "011";
                         status_o <= std_logic_vector(TO_UNSIGNED(1,32));
+                        stage <= "011";
                         i := 0;
                         tmp_data := tmp_data - 1;
                         MASK <= std_logic_vector(shift_left(unsigned_long,TO_INTEGER(unsigned(tmp_data))));
                     end if;
                 when "011" =>
                     status_o <= std_logic_vector(TO_UNSIGNED(3,32));
-                    if (control_i = 3) then
+                    if (control_i = 4) then
                         status_o <= std_logic_vector(TO_UNSIGNED(1,32));
                         tmp_data := data_t_i;
                         X <= b(TO_INTEGER(unsigned(tmp_data))) or VN;
