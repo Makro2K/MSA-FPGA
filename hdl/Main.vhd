@@ -45,6 +45,13 @@ begin
     variable unsigned_long: unsigned (31 downto 0) := TO_UNSIGNED(1, 32);
     variable tmp_data:      std_logic_vector (31 downto 0);
     variable i:             integer := 0;
+    variable tmp_X:         std_logic_vector (31 downto 0);
+    variable tmp_D0:         std_logic_vector (31 downto 0);
+    variable tmp_HN:         std_logic_vector (31 downto 0);
+    variable tmp_HP:         std_logic_vector (31 downto 0);
+    variable tmp_diff:         std_logic_vector (31 downto 0);
+    --variable tmp_VP:         std_logic_vector (31 downto 0);
+    --variable tmp_VN:         std_logic_vector (31 downto 0);
     begin
         if rising_edge(clk_i) then
             if (rst_i = '0' or control_i = 0) then
@@ -72,7 +79,7 @@ begin
                     current_stage <= stage;
                     status_o <= std_logic_vector(TO_UNSIGNED(1,32));
                     tmp_data := m;
-                    diff <= tmp_data;
+                    tmp_diff := tmp_data;
                     k <= tmp_data;                       
                     VP <= std_logic_vector(shift_left(unsigned_long,TO_INTEGER(unsigned(tmp_data)))) - 1;
                     VN <= (others => '0');
@@ -96,7 +103,7 @@ begin
                     current_stage <= stage;
                     status_o <= std_logic_vector(TO_UNSIGNED(1,32));
                     i := 0;
-                    tmp_data := tmp_data - 1;
+                    tmp_data := m - 1;
                     MASK <= std_logic_vector(shift_left(unsigned_long,TO_INTEGER(unsigned(tmp_data))));
                     stage <= "101";
                 when "101" => -- Wait for t[i]
@@ -111,21 +118,21 @@ begin
                     current_stage <= stage;
                     status_o <= std_logic_vector(TO_UNSIGNED(1,32));
                     tmp_data := data_t_i;
-                    X <= b(TO_INTEGER(unsigned(tmp_data))) or VN;
-                    D0 <= X or (VP xor (VP + (X and VP)));
-                    HN <= VP and D0;
-                    HP <= VN or (not(VP or D0));
-                    X <= std_logic_vector(shift_left(unsigned(HP), 1));
-                    VN <= X and D0;
-                    VP <= (std_logic_vector(shift_left(unsigned(HN), 1))) or (not(X or D0));
-                    if (HP and MASK) = 1 then
-                        diff <= diff + 1;
+                    tmp_X := b(TO_INTEGER(unsigned(tmp_data))) or VN;
+                    tmp_D0 := tmp_X or (VP xor (VP + (tmp_X and VP)));
+                    tmp_HN := VP and tmp_D0;
+                    tmp_HP := VN or (not(VP or tmp_D0));
+                    tmp_X := std_logic_vector(shift_left(unsigned(tmp_HP), 1));
+                    VN <= tmp_X and tmp_D0;
+                    VP <= (std_logic_vector(shift_left(unsigned(tmp_HN), 1))) or (not(tmp_X or tmp_D0));
+                    if (tmp_HP and MASK) = 1 then
+                        tmp_diff := tmp_diff + 1;
                     end if;
-                    if (HN and MASK) = 1 then
-                        diff <= diff - 1;
+                    if (tmp_HN and MASK) = 1 then
+                        tmp_diff := diff - 1;
                     end if;
-                    if(diff < k) then
-                        k <= diff;
+                    if(tmp_diff < k) then
+                        k <= tmp_diff;
                     end if;
                     stage <= "101";
                 when "111" => -- returning k value
