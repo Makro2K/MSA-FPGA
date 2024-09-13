@@ -7,8 +7,8 @@
 int main()
 {
     init_platform();
-    u32 N = 10;
-	u32 M = 6;
+    u32 N = 1;
+	u32 M = 1;
 	u32 p[6] = {2,2,2,2,0,0};
 	u32 t[10] = {2,2,2,0,2,3,0,0,0,0};
 	u32 k;
@@ -24,31 +24,28 @@ int main()
     while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until m analysing is done
     for (int i=0; i<M; i++)
     {
-    	if(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 2)
-    	{
-    		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG1_OFFSET, p[i]); // Send p[i] to FPGA
-    		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 2); // Start p analysing
-    		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 1); // Block next iteration
-    	}
-    	usleep(5);
-    	while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until p analysing is done
+    	while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) != 2){};
+
+		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG1_OFFSET, 2); // Send p[i] to FPGA
+		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 2); // Start p analysing
+		//Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 1); // Block next iteration
+		//usleep(5);
+    	//while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until p analysing is done
     }
     Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 3); // End p-loop, do next operations
-    usleep(5);
-    while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until done
+    //usleep(5);
+    //while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until done
+	for (int i=0; i<N; i++)
 	{
-    	for (int i=0; i<N; i++)
-		{
-			if(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 3)
-			{
-				Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG0_OFFSET, t[i]); // Send t[i] to FPGA
-				Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 4); // Start p analysing
-				Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 1); // Block next iteration
-			}
-			usleep(5);
-			while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until p analysing is done
-		}
+		while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) != 3){};
+		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG0_OFFSET, 3); // Send t[i] to FPGA
+		Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 4); // Start t analysing
+		//Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 1); // Block next iteration
+		//usleep(5);
+		//while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) == 1){}; // Wait until p analysing is done
 	}
+	Xil_Out32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG4_OFFSET, 5);
+	//while(Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG6_OFFSET) != 4){};
 	k = Xil_In32(XPAR_MSA_BPM_0_S00_AXI_BASEADDR + MSA_BPM_S00_AXI_SLV_REG5_OFFSET);
 	printf("K = %d\n\r", k);
     cleanup_platform();
