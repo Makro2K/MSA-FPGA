@@ -129,7 +129,7 @@ begin
                         tmp_diff := tmp_diff + 1;
                     end if;
                     if (tmp_HN and MASK) = 1 then
-                        tmp_diff := diff - 1;
+                        tmp_diff := tmp_diff - 1;
                     end if;
                     if(tmp_diff < k) then
                         k <= tmp_diff;
