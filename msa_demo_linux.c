@@ -38,10 +38,10 @@ int main() {
     uint32_t test;
     start = clock();
     uint32_t N = 6;
-	uint32_t M = 1;
-	//u32 p[2] = {2,2,2,2,0,0};
-	uint32_t t[6] = {2,0,0,0,0,0};
-	uint32_t k;
+    uint32_t M = 1;
+    //u32 p[2] = {2,2,2,2,0,0};
+    uint32_t t[6] = {2,0,0,0,0,0};
+    uint32_t k;
     printf("Start MSA Linux demo app!\n\r");
 
     *((volatile uint32_t *)(mapped_base + OFFSET_REG4)) = 0;
@@ -49,43 +49,35 @@ int main() {
     {
         *((volatile uint32_t *)(mapped_base + OFFSET_REG3)) = M;
         *((volatile uint32_t *)(mapped_base + OFFSET_REG4)) = 1;
-        test = *((volatile uint32_t *)(mapped_base + OFFSET_REG6));
-        printf("status 1 = %d\n\r", test);
+        //printf("Test\n\r");
     }
-    printf("M loaded\n\r");
-    //usleep(5);
     while(*((volatile uint32_t *)(mapped_base + OFFSET_REG6)) == 1){};
 
     for (int i=0; i<M;i++)
     {   
-        printf("Start p loop\n\r");
-        test = *((volatile uint32_t *)(mapped_base + OFFSET_REG6));
-        printf("status 2 = %d\n\r", test);
-        while(test !=2){};
-        //while(*((volatile uint32_t *)(mapped_base + OFFSET_REG6)) != 2){};
-        printf("After while\n\r");
+        while(*((volatile uint32_t *)(mapped_base + OFFSET_REG6)) != 2){};
         *((volatile uint32_t *)(mapped_base + OFFSET_REG1)) = 2;
         *((volatile uint32_t *)(mapped_base + OFFSET_REG4)) = 2;
     }
-    printf("p loop ended\n\r");
     *((volatile uint32_t *)(mapped_base + OFFSET_REG4)) = 3;
     
     for (int i=0; i<N;i++)
     {
         while(*((volatile uint32_t *)(mapped_base + OFFSET_REG6)) != 3){};
-        *((volatile uint32_t *)(mapped_base + OFFSET_REG1)) = t[i];
+        *((volatile uint32_t *)(mapped_base + OFFSET_REG0)) = t[i];
         *((volatile uint32_t *)(mapped_base + OFFSET_REG4)) = 4;
     }
-    printf("t loop ended\n\r");
     *((volatile uint32_t *)(mapped_base + OFFSET_REG4)) = 5;
     //Read result
     k = *((volatile uint32_t *)(mapped_base + OFFSET_REG5));
     
     printf("K = %d\n\r", k);
+    
+    end = clock();
     munmap(mapped_base, length);
     close(mem_fd);
 
-    end = clock();
+    
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     printf("Time = %f\n\r", cpu_time_used);
