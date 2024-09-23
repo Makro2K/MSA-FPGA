@@ -50,6 +50,7 @@ begin
     variable tmp_HN:         std_logic_vector (31 downto 0);
     variable tmp_HP:         std_logic_vector (31 downto 0);
     variable tmp_diff:         std_logic_vector (31 downto 0);
+    --variable b:              b_array;
     --variable tmp_VP:         std_logic_vector (31 downto 0);
     --variable tmp_VN:         std_logic_vector (31 downto 0);
     begin
@@ -60,6 +61,7 @@ begin
                 D0 <= (others => '0');
                 HN <= (others => '0');
                 HP <= (others => '0');
+                k <= (others => '0');
                 X <= (others => '0');
                 MASK <= (others => '0');
                 diff <= (others => '0');
@@ -97,6 +99,7 @@ begin
                     status_o <= std_logic_vector(TO_UNSIGNED(1,32));
                     tmp_data := data_p_i;
                     b(TO_INTEGER(unsigned(tmp_data))) <= (b(TO_INTEGER(unsigned(tmp_data))) or std_logic_vector(shift_left(unsigned_long,i)));
+                    --b_test <= b;
                     i := i + 1;
                     stage <= "010";
                 when "100" => -- After p-loop operations
@@ -125,10 +128,10 @@ begin
                     tmp_X := std_logic_vector(shift_left(unsigned(tmp_HP), 1));
                     VN <= tmp_X and tmp_D0;
                     VP <= (std_logic_vector(shift_left(unsigned(tmp_HN), 1))) or (not(tmp_X or tmp_D0));
-                    if (tmp_HP and MASK) = 1 then
+                    if (tmp_HP and MASK) > 0 then
                         tmp_diff := tmp_diff + 1;
                     end if;
-                    if (tmp_HN and MASK) = 1 then
+                    if (tmp_HN and MASK) > 0 then
                         tmp_diff := tmp_diff - 1;
                     end if;
                     if(tmp_diff < k) then
